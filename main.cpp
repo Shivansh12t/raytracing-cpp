@@ -1,8 +1,42 @@
 #include <iostream>
 #include <SDL2/SDL.h>
+#include <cmath>
 
 #define WINDOW_WIDTH 810
 #define WINDOW_HEIGHT 540
+
+#define COLOR_WHITE 0xffffffff 
+
+class Circle{
+    private:
+        double x;
+        double y;
+        double radius;
+    public:
+        Circle(double x, double y, double r) : x(x), y(y), radius(r) {}
+
+        double getArea() const {
+            return 3.14 * radius * radius;
+        }
+        void setRadius(double r) {
+            this->radius = r;
+        }
+        void drawCircle(SDL_Surface* surf, Uint32 color){
+            double radius_2 = radius * radius;
+            // x^2 + y^2 <= r^2
+            for (double px = x - radius; px <= x + radius; px++){
+                for (double py = y - radius; py <= y +  radius; py++){
+                    double dx = px - x;
+                    double dy = py - y;
+                    double distance_2 = dx * dx + dy * dy;
+                    if (distance_2 < radius_2){
+                        SDL_Rect pixel = (SDL_Rect) {(int)px,(int)py,1,1};
+                        SDL_FillRect(surf, &pixel, color);
+                    }
+                }
+            }
+        }
+};
 
 int main(int argc, char* argv[]){
     // initialise SDL2
@@ -21,8 +55,8 @@ int main(int argc, char* argv[]){
     // create surface
     SDL_Surface* surf = SDL_GetWindowSurface(win);
 
-    // draw rectangle
-    SDL_FillRect(surf, NULL, SDL_MapRGB(surf->format, 255, 255, 0));
+    Circle c = Circle(WINDOW_WIDTH/2,WINDOW_HEIGHT/2,100);
+    c.drawCircle(surf, COLOR_WHITE);
 
     // updates surface
     SDL_UpdateWindowSurface(win);
